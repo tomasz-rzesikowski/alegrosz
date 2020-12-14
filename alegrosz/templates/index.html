@@ -1,0 +1,18 @@
+{% extends '_base.html' %}
+{% block content %}
+
+    <ul>
+        {% for item in items %}
+            <li>
+                {{ item.id }}
+                {{ item.title }}
+                {{ item.description }}
+                {{ item.price }}
+                {{ item.image }}
+                {{ item.category }}
+                {{ item.subcategory }}
+            </li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}
