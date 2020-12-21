@@ -1,5 +1,7 @@
 from flask import Blueprint, url_for, flash, redirect, render_template, request, abort
+from flask_wtf.file import FileRequired
 
+from ..utils import save_image_uploads
 from ..dbs.dbs import get_db
 from ..forms import NewItemForm, EditItemForm, DeleteItemForm
 
@@ -21,7 +23,8 @@ def add():
     subcategories = c.fetchall()
     form.subcategory.choices = subcategories
 
-    if form.validate_on_submit():
+    if form.validate_on_submit() and form.image.validate(form, extra_validators=(FileRequired(),)):
+        filename = save_image_uploads(form.image)
         c.execute('''INSERT INTO item
         (title, description, price, image, category_id, subcategory_id)
         VALUES (?,?,?,?,?,?)''',
@@ -29,7 +32,7 @@ def add():
                       form.title.data,
                       form.description.data,
                       float(form.price.data),
-                      form.image.data,
+                      filename,
                       form.category.data,
                       form.subcategory.data
                   ))
@@ -101,13 +104,18 @@ def edit(item_id):
     if db_item:
         form = EditItemForm()
         if form.validate_on_submit():
+            filename = db_item['image']
+
+            if form.image.data:
+                filename = save_image_uploads(form.image)
+
             c.execute('''UPDATE item SET
             title = ?, description = ?, price = ?, image = ?
             WHERE id = ?''', (
                 form.title.data,
                 form.description.data,
                 float(form.price.data),
-                form.image.data,
+                filename,
                 item_id
             ))
             conn.commit()

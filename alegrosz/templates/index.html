@@ -1,5 +1,16 @@
 {% extends '_base.html' %}
+{% from 'form_field_macros.html' import form_field %}
 {% block content %}
+<div>
+    <form action="">
+        {{ form_field(form.title) }}
+        {{ form_field(form.description) }}
+        {{ form_field(form.price) }}
+        {{ form_field(form.category) }}
+        {{ form_field(form.subcategory) }}
+        {{ form.submit }}
+    </form>
+</div>
 
     <ul>
         {% for item in items %}
